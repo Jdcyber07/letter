@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Janam Din Mubarak | A Special Message</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Montserrat:wght@300;400&family=Playfair+Display:ital,wght@0,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #fff5f7;
+        --primary-pink: #f8bbd0;
+        --accent-pink: #f06292;
+        --text-dark: #4a4a4a;
+        --envelope-color: #ffffff;
+        --envelope-shadow: rgba(240, 98, 146, 0.2);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        font-family: "Montserrat", sans-serif;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: var(--text-dark);
+      }
+
+      /* Initial View Styles */
+      #container {
+        width: 100%;
+        max-width: 1200px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      #instruction {
+        font-family: "Montserrat", sans-serif;
+        letter-spacing: 0.3em;
+        font-size: 0.9rem;
+        color: var(--accent-pink);
+        margin-bottom: 2rem;
+        transition: opacity 0.8s ease;
+        text-transform: uppercase;
+      }
+
+      /* Envelope Wrapper */
+      .envelope-wrapper {
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 10;
+      }
+
+      .envelope-wrapper:hover {
+        transform: scale(1.05);
+      }
+
+      .envelope {
+        position: relative;
+        width: 320px;
+        height: 220px;
+        background: var(--envelope-color);
+        border-radius: 4px;
+        box-shadow: 0 10px 30px var(--envelope-shadow);
+      }
+
+      /* Envelope Flap */
+      .flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--envelope-color);
+        clip-path: polygon(0 0, 100% 0, 50% 50%);
+        transition: transform 0.6s ease;
+        transform-origin: top;
+        z-index: 4;
+        border-top: 1px solid #fce4ec;
+      }
+
+      /* Envelope Body */
+      .pocket {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        z-index: 3;
+      }
+
+      .pocket::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top, #fdf2f5, transparent);
+        clip-path: polygon(0 50%, 50% 100%, 100% 50%, 100% 100%, 0 100%);
+      }
+
+      /* Main Scene (Opened Letter) */
+      #main-scene {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: 4rem;
+        opacity: 0;
+        visibility: hidden;
+        background-color: var(--bg-color);
+        transition: opacity 1.5s ease;
+        z-index: 20;
+        overflow-y: auto;
+      }
+
+      .left-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-right: 3rem;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .right-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-left: 1px solid var(--primary-pink);
+        padding-left: 3rem;
+      }
+
+      .birthday-message {
+        font-family: "Playfair Display", serif;
+        font-size: 1.25rem;
+        line-height: 1.8;
+        color: var(--text-dark);
+        font-style: italic;
+      }
+
+      .greeting-text {
+        font-family: "Dancing Script", cursive;
+        font-size: 4.5rem;
+        color: var(--accent-pink);
+        line-height: 1.2;
+        word-wrap: break-word;
+      }
+
+      /* Letter Opening Animation Classes */
+      .is-open .flap {
+        transform: rotateX(180deg);
+        z-index: 1;
+      }
+
+      .is-open .envelope-wrapper {
+        transform: translateY(100px) scale(0.8);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .show-scene {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+
+      /* Typewriter Animation Classes */
+      .char {
+        opacity: 0;
+        display: inline-block;
+        animation: fadeInChar 0.1s forwards;
+      }
+
+      @keyframes fadeInChar {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUpFade {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fade-in-content {
+        animation: slideUpFade 1.5s forwards ease-out;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        #main-scene {
+          grid-template-columns: 1fr;
+          padding: 2rem;
+          text-align: center;
+        }
+        .right-content {
+          border-left: none;
+          border-top: 1px solid var(--primary-pink);
+          padding-left: 0;
+          padding-top: 2rem;
+          margin-top: 2rem;
+          order: -1;
+        }
+        .left-content {
+          padding-right: 0;
+        }
+        .greeting-text {
+          font-size: 3rem;
+        }
+        .birthday-message {
+          font-size: 1.1rem;
+        }
+      }
+
+      /* Floating particles for ambiance */
+      .particle {
+        position: absolute;
+        background: var(--primary-pink);
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0.3;
+        animation: float 10s infinite linear;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) translateX(0);
+        }
+        50% {
+          transform: translateY(-100px) translateX(50px);
+        }
+        100% {
+          transform: translateY(-200px) translateX(-50px);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div id="instruction">This is for You, Айша</div>
+
+      <div class="envelope-wrapper" id="envelopeWrapper">
+        <div class="envelope">
+          <div class="flap"></div>
+          <div class="pocket"></div>
+        </div>
+      </div>
+
+      <div id="main-scene">
+        <div class="left-content" id="leftContent">
+          <div class="birthday-message">
+            My Dearest/loveliest Ayesha,<br /><br />
+            Today is a celebration of the day you brought your light into this
+            world. Every moment spent with you feels like a beautiful melody,
+            and my heart overflows with gratitude for your presence.
+            <br /><br />
+            May your year be as soft as your heart, as bright as your smile, and
+            as wonderful as the love you share. I hope this birthday brings you
+            as much joy as you bring to everyone around you.
+            <br /><br />
+            With all my love, always.
+            <br /><br />
+            The time is 3:01 AM, and you are sleeping infornt of me, wowwwwww
+
+            <br /><br />
+            I mean wowwwww! you have no idea how beautiful you look when you are
+            sleeping, I am so lucky to have you in my life. You have no idea how
+            much beautiful you are in my eyes, you the the most beautiful girl i
+            have ever seen in my life, you are my bestest favourite person, you
+            have always gave me positive energy. My love. You deserve all the
+            happiness in the world.
+            <br /><br />
+            Abi mere smne ho chahy so rhi ho pr sukkon de rhi ho smne hoti ho
+            toh sukkon milta he your awaz your batein the way you share
+            everything with me i love to listen you i love to love you i love
+            everything about you i love being with you beign childish with you
+            abi mai awaz sun rha hon sonay ki aik ppyara se chehra dkh rha hon
+            achi si pyari si nose which is my favvvvvvvvv, you are the most
+            beautiful thing ever happened in my life love to listen you itni
+            pyari ankhein yh zulfeinnnnnnnnnnnn, uffffffffffffff! jaan war do
+            jitni dil mai beth chuki ho meri jaan, meri zindagi, meri khushi,
+            meri har ek cheez mai ho, dil mai dimag mai, i love you so
+            muchhhhhhhhhhhhhh! <br /><br />
+            Meri Ladli Ayesha.
+            <br /><br />
+            Meri Pasandidaaaaaaaaaaaaaaaaaaaaaaaaaaaat Aurat You are My Last!
+          </div>
+        </div>
+        <div class="right-content">
+          <div class="greeting-text" id="greetingText"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Audio Element -->
+    <!-- Using a soft piano/ambient royalty free style link as fallback -->
+    <audio id="bgMusic" loop>
+      <source src="reel.mp4" type="audio/mpeg" />
+    </audio>
+
+    <script>
+      const envelope = document.getElementById("envelopeWrapper");
+      const instruction = document.getElementById("instruction");
+      const mainScene = document.getElementById("main-scene");
+      const greetingElement = document.getElementById("greetingText");
+      const leftContent = document.getElementById("leftContent");
+      const bgMusic = document.getElementById("bgMusic");
+
+      const greeting = "Janam Din Mubarak, Ayesha Last Love.";
+
+      // Create ambient particles
+      function createParticles() {
+        for (let i = 0; i < 15; i++) {
+          const p = document.createElement("div");
+          p.className = "particle";
+          const size = Math.random() * 8 + 4 + "px";
+          p.style.width = size;
+          p.style.height = size;
+          p.style.left = Math.random() * 100 + "vw";
+          p.style.top = Math.random() * 100 + "vh";
+          p.style.animationDelay = Math.random() * 5 + "s";
+          p.style.animationDuration = Math.random() * 5 + 10 + "s";
+          document.body.appendChild(p);
+        }
+      }
+
+      // Typewriter effect for Urdu/Hindi greeting
+      function typeGreeting() {
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i < greeting.length) {
+            const span = document.createElement("span");
+            span.textContent = greeting[i];
+            span.className = "char";
+            greetingElement.appendChild(span);
+            i++;
+          } else {
+            clearInterval(interval);
+            // Show left content after typewriter finishes
+            setTimeout(() => {
+              leftContent.classList.add("fade-in-content");
+            }, 500);
+          }
+        }, 150);
+      }
+
+      envelope.addEventListener("click", () => {
+        // 1. Play Music
+        bgMusic
+          .play()
+          .catch((e) => console.log("Audio play blocked until interaction."));
+
+        // 2. Animate Envelope
+        envelope.parentElement.classList.add("is-open");
+        instruction.style.opacity = "0";
+
+        // 3. Transition to Main Scene
+        setTimeout(() => {
+          mainScene.classList.add("show-scene");
+          // 4. Start Text Animations
+          setTimeout(typeGreeting, 800);
+        }, 800);
+      });
+
+      // Initialize particles
+      createParticles();
+    </script>
+  </body>
+</html>
